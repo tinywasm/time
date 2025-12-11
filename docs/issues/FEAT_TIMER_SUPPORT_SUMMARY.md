@@ -70,7 +70,7 @@ These lines execute in the browser's event loop and cannot be synchronously test
 ```go
 package main
 
-import "github.com/cdvelop/tinytime"
+import "github.com/tinywasm/time"
 
 func main() {
     tp := tinytime.NewTimeProvider()

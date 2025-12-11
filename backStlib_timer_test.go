@@ -1,16 +1,16 @@
 //go:build !wasm
 
-package tinytime_test
+package time
 
 import (
 	"testing"
 	"time"
 
-	"github.com/cdvelop/tinytime"
+	"github.com/tinywasm/time"
 )
 
 func TestAfterFunc(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 	executed := false
 
 	tp.AfterFunc(50, func() {
@@ -30,7 +30,7 @@ func TestAfterFunc(t *testing.T) {
 }
 
 func TestAfterFunc_Stop(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 	timer, executed := AfterFuncStopSetup(tp)
 
 	wasActive := timer.Stop()

@@ -1,4 +1,4 @@
-package tinytime
+package time
 
 // TimeProvider defines the interface for time utilities, implemented for both standard Go and WASM/JS environments.
 type TimeProvider interface {

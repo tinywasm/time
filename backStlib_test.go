@@ -1,18 +1,18 @@
 //go:build !wasm
 // +build !wasm
 
-package tinytime_test
+package time
 
 import (
 	"testing"
 
-	"github.com/cdvelop/tinytime"
+	"github.com/tinywasm/time"
 )
 
 // Tests for standard Go environment using shared validation functions
 
 func TestAllShared(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 
 	t.Run("UnixNano", func(t *testing.T) { UnixNanoShared(t, tp) })
 	t.Run("FormatDate", func(t *testing.T) { FormatDateShared(t, tp) })

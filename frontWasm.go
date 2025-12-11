@@ -1,12 +1,12 @@
 //go:build wasm
 // +build wasm
 
-package tinytime
+package time
 
 import (
 	"syscall/js"
 
-	. "github.com/cdvelop/tinystring"
+	. "github.com/tinywasm/fmt"
 )
 
 // timeClient implements TimeProvider for WASM/JS environments using the JavaScript Date API.

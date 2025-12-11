@@ -1,11 +1,11 @@
 //go:build wasm
 
-package tinytime_test
+package time
 
 import (
 	"testing"
 
-	"github.com/cdvelop/tinytime"
+	"github.com/tinywasm/time"
 )
 
 // WASM tests run in real browser via wasmbrowsertest.
@@ -18,7 +18,7 @@ import (
 // The actual callback execution is tested only in backend tests.
 
 func TestAfterFunc_ReturnsTimer(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 
 	timer := tp.AfterFunc(1000, func() {
 		// Won't execute during test - we can't wait
@@ -34,7 +34,7 @@ func TestAfterFunc_ReturnsTimer(t *testing.T) {
 }
 
 func TestAfterFunc_StopReturnsTrue(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 
 	timer := tp.AfterFunc(1000, func() {})
 
@@ -46,7 +46,7 @@ func TestAfterFunc_StopReturnsTrue(t *testing.T) {
 }
 
 func TestAfterFunc_DoubleStopReturnsFalse(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 
 	timer := tp.AfterFunc(1000, func() {})
 
@@ -60,7 +60,7 @@ func TestAfterFunc_DoubleStopReturnsFalse(t *testing.T) {
 }
 
 func TestAfterFunc_CallbackLogic(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 	executed := false
 
 	timer := tp.AfterFunc(1000, func() {
@@ -68,7 +68,7 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 	})
 
 	// Manually trigger the callback logic
-	tinytime.FireTimer(timer)
+	time.FireTimer(timer)
 
 	if !executed {
 		t.Error("Callback should have been executed by FireTimer")
@@ -80,7 +80,7 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 	}
 
 	// Fire again - should be no-op (safe to call on inactive timer)
-	tinytime.FireTimer(timer)
+	time.FireTimer(timer)
 	if executed == false {
 		t.Error("executed flag should still be true")
 	}
@@ -89,7 +89,7 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 }
 
 func TestAfterFunc_NilCallback(t *testing.T) {
-	tp := tinytime.NewTimeProvider()
+	tp := time.NewTimeProvider()
 
 	// AfterFunc with nil callback should not panic
 	timer := tp.AfterFunc(1000, nil)
@@ -99,7 +99,7 @@ func TestAfterFunc_NilCallback(t *testing.T) {
 	}
 
 	// Manually trigger - should not panic
-	tinytime.FireTimer(timer)
+	time.FireTimer(timer)
 
 	// Clean up
 	timer.Stop()

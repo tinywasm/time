@@ -1,12 +1,12 @@
 //go:build !wasm
 // +build !wasm
 
-package tinytime
+package time
 
 import (
 	"time"
 
-	. "github.com/cdvelop/tinystring"
+	. "github.com/tinywasm/fmt"
 )
 
 // NewTimeProvider returns the correct implementation based on the build environment.

@@ -1,15 +1,15 @@
-package tinytime_test
+package time
 
 import (
 	"testing"
 
-	"github.com/cdvelop/tinytime"
+	"github.com/tinywasm/time"
 )
 
 // AfterFuncStopShared tests that Stop() prevents callback execution.
 // The waiting mechanism is platform-specific, so this only sets up the test.
 // Returns: timer, pointer to executed flag
-func AfterFuncStopSetup(tp tinytime.TimeProvider) (tinytime.Timer, *bool) {
+func AfterFuncStopSetup(tp time.TimeProvider) (time.Timer, *bool) {
 	executed := false
 	timer := tp.AfterFunc(100, func() {
 		executed = true

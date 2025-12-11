@@ -1,9 +1,9 @@
-package tinytime_test
+package time
 
 import (
 	"testing"
 
-	"github.com/cdvelop/tinytime"
+	"github.com/tinywasm/time"
 )
 
 // Global test constants
@@ -17,7 +17,7 @@ var (
 )
 
 // Test FormatDate
-func FormatDateShared(t *testing.T, tp tinytime.TimeProvider) {
+func FormatDateShared(t *testing.T, tp time.TimeProvider) {
 	// Test with UnixNano (int64)
 	result := tp.FormatDate(GlobalTestUnixNano)
 	if len(result) != 10 || result[4] != '-' || result[7] != '-' {
@@ -58,7 +58,7 @@ func FormatDateShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test FormatTime
-func FormatTimeShared(t *testing.T, tp tinytime.TimeProvider) {
+func FormatTimeShared(t *testing.T, tp time.TimeProvider) {
 	// Test with int64 (UnixNano)
 	result := tp.FormatTime(GlobalTestUnixNano)
 	if len(result) != 8 || result[2] != ':' || result[5] != ':' {
@@ -93,7 +93,7 @@ func FormatTimeShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test FormatDateTime
-func FormatDateTimeShared(t *testing.T, tp tinytime.TimeProvider) {
+func FormatDateTimeShared(t *testing.T, tp time.TimeProvider) {
 	// Test with UnixNano (int64)
 	result := tp.FormatDateTime(GlobalTestUnixNano)
 	// Format: YYYY-MM-DD HH:MM:SS (19 chars)
@@ -142,7 +142,7 @@ func FormatDateTimeShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test FormatDateTimeShort
-func FormatDateTimeShortShared(t *testing.T, tp tinytime.TimeProvider) {
+func FormatDateTimeShortShared(t *testing.T, tp time.TimeProvider) {
 	// Test with int64 (UnixNano timestamp)
 	nano := int64(1705307400000000000) // 2024-01-15 08:30:00 UTC
 	result := tp.FormatDateTimeShort(nano)
@@ -191,7 +191,7 @@ func FormatDateTimeShortShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test UnixNano
-func UnixNanoShared(t *testing.T, tp tinytime.TimeProvider) {
+func UnixNanoShared(t *testing.T, tp time.TimeProvider) {
 	nano := tp.UnixNano()
 
 	// Check it's a reasonable timestamp (not zero, not negative, not too far in future)
@@ -213,7 +213,7 @@ func UnixNanoShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test ParseDate
-func ParseDateShared(t *testing.T, tp tinytime.TimeProvider) {
+func ParseDateShared(t *testing.T, tp time.TimeProvider) {
 	// Valid date
 	nano, err := tp.ParseDate("2024-01-15")
 	if err != nil {
@@ -251,7 +251,7 @@ func ParseDateShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test ParseTime
-func ParseTimeShared(t *testing.T, tp tinytime.TimeProvider) {
+func ParseTimeShared(t *testing.T, tp time.TimeProvider) {
 	// Valid time
 	minutes, err := tp.ParseTime("08:30")
 	if err != nil {
@@ -316,7 +316,7 @@ func ParseTimeShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test ParseDateTime
-func ParseDateTimeShared(t *testing.T, tp tinytime.TimeProvider) {
+func ParseDateTimeShared(t *testing.T, tp time.TimeProvider) {
 	// Valid date + time (HH:MM)
 	nano, err := tp.ParseDateTime("2024-01-15", "08:30")
 	if err != nil {
@@ -351,7 +351,7 @@ func ParseDateTimeShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test IsToday
-func IsTodayShared(t *testing.T, tp tinytime.TimeProvider) {
+func IsTodayShared(t *testing.T, tp time.TimeProvider) {
 	// Current time should be today
 	now := tp.UnixNano()
 	if !tp.IsToday(now) {
@@ -374,7 +374,7 @@ func IsTodayShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test IsPast
-func IsPastShared(t *testing.T, tp tinytime.TimeProvider) {
+func IsPastShared(t *testing.T, tp time.TimeProvider) {
 	now := tp.UnixNano()
 
 	// Past timestamp
@@ -393,7 +393,7 @@ func IsPastShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test IsFuture
-func IsFutureShared(t *testing.T, tp tinytime.TimeProvider) {
+func IsFutureShared(t *testing.T, tp time.TimeProvider) {
 	now := tp.UnixNano()
 
 	// Future timestamp
@@ -412,7 +412,7 @@ func IsFutureShared(t *testing.T, tp tinytime.TimeProvider) {
 }
 
 // Test DaysBetween
-func DaysBetweenShared(t *testing.T, tp tinytime.TimeProvider) {
+func DaysBetweenShared(t *testing.T, tp time.TimeProvider) {
 	// 7 days apart
 	nano1 := int64(1705276800000000000) // 2024-01-15
 	nano2 := int64(1705881600000000000) // 2024-01-22
