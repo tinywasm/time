@@ -1,7 +1,7 @@
 //go:build wasm
 // +build wasm
 
-package time
+package time_test
 
 import (
 	"testing"

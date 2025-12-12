@@ -1,29 +1,30 @@
 //go:build !wasm
 
-package time
+package time_test
 
 import (
+	"sync/atomic"
 	"testing"
-	"time"
+	stlib "time"
 
 	"github.com/tinywasm/time"
 )
 
 func TestAfterFunc(t *testing.T) {
 	tp := time.NewTimeProvider()
-	executed := false
+	var executed atomic.Bool
 
 	tp.AfterFunc(50, func() {
-		executed = true
+		executed.Store(true)
 	})
 
-	if executed {
+	if executed.Load() {
 		t.Error("callback executed too early")
 	}
 
-	time.Sleep(100 * time.Millisecond)
+	stlib.Sleep(100 * stlib.Millisecond)
 
-	if !executed {
+	if !executed.Load() {
 		t.Error("callback was not executed")
 	}
 	t.Log("AfterFunc test passed")
@@ -38,6 +39,6 @@ func TestAfterFunc_Stop(t *testing.T) {
 		t.Error("timer should have been active")
 	}
 
-	time.Sleep(200 * time.Millisecond)
+	stlib.Sleep(200 * stlib.Millisecond)
 	AfterFuncStopVerify(t, executed)
 }

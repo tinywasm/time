@@ -1,6 +1,6 @@
 //go:build wasm
 
-package time
+package time_test
 
 import (
 	"testing"
@@ -68,7 +68,7 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 	})
 
 	// Manually trigger the callback logic
-	time.FireTimer(timer)
+	FireTimer(timer)
 
 	if !executed {
 		t.Error("Callback should have been executed by FireTimer")
@@ -80,7 +80,7 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 	}
 
 	// Fire again - should be no-op (safe to call on inactive timer)
-	time.FireTimer(timer)
+	FireTimer(timer)
 	if executed == false {
 		t.Error("executed flag should still be true")
 	}
@@ -99,7 +99,7 @@ func TestAfterFunc_NilCallback(t *testing.T) {
 	}
 
 	// Manually trigger - should not panic
-	time.FireTimer(timer)
+	FireTimer(timer)
 
 	// Clean up
 	timer.Stop()

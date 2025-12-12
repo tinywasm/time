@@ -1,5 +1,4 @@
 //go:build wasm
-// +build wasm
 
 package time
 
@@ -151,15 +150,15 @@ func (tc *timeClient) DaysBetween(nano1, nano2 int64) int {
 	return daysBetween(nano1, nano2)
 }
 
-// wasmTimer implements Timer for WASM using setTimeout
-type wasmTimer struct {
+// WasmTimer implements Timer for WASM using setTimeout
+type WasmTimer struct {
 	id     int
 	active bool
 	jsFunc js.Func // Store to release later
 	f      func()  // Store callback to execute
 }
 
-func (wt *wasmTimer) Stop() bool {
+func (wt *WasmTimer) Stop() bool {
 	if !wt.active {
 		return false
 	}
@@ -169,7 +168,7 @@ func (wt *wasmTimer) Stop() bool {
 	return true
 }
 
-func (wt *wasmTimer) fire() {
+func (wt *WasmTimer) Fire() {
 	if !wt.active {
 		return
 	}
@@ -181,13 +180,13 @@ func (wt *wasmTimer) fire() {
 }
 
 func (tc *timeClient) AfterFunc(milliseconds int, f func()) Timer {
-	wt := &wasmTimer{
+	wt := &WasmTimer{
 		active: true,
 		f:      f,
 	}
 
 	wt.jsFunc = js.FuncOf(func(this js.Value, args []js.Value) any {
-		wt.fire()
+		wt.Fire()
 		return nil
 	})
 

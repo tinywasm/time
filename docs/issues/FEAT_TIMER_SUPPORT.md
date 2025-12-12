@@ -90,14 +90,14 @@ func (ts *timeServer) AfterFunc(milliseconds int, f func()) Timer {
 **Frontend Implementation (frontWasm.go):**
 
 ```go
-// wasmTimer implements Timer for WASM using setTimeout
-type wasmTimer struct {
+// WasmTimer implements Timer for WASM using setTimeout
+type WasmTimer struct {
     id     int
     active bool
     jsFunc js.Func // Store to release later
 }
 
-func (wt *wasmTimer) Stop() bool {
+func (wt *WasmTimer) Stop() bool {
     if !wt.active {
         return false
     }
@@ -108,7 +108,7 @@ func (wt *wasmTimer) Stop() bool {
 }
 
 func (tc *timeClient) AfterFunc(milliseconds int, f func()) Timer {
-    wt := &wasmTimer{
+    wt := &WasmTimer{
         active: true,
     }
     
@@ -168,7 +168,7 @@ func TestAfterFunc_Stop(t *testing.T) {
         t.Error("timer should have been active")
     }
     
-    // Wait to ensure callback doesn't fire
+    // Wait to ensure callback doesn't Fire
     time.Sleep(200 * time.Millisecond)
     
     if executed {
@@ -448,7 +448,7 @@ None. All new methods are additions to the existing interface.
 
 2. **No channels for waiting**: Channels block goroutines, which blocks the JS event loop in WASM.
 
-3. **Memory management**: `js.Func` must be released with `Release()`. Implementation handles this automatically on timer fire or stop.
+3. **Memory management**: `js.Func` must be released with `Release()`. Implementation handles this automatically on timer Fire or stop.
 
 4. **Callbacks must be lightweight**: They run in the JS event loop. Heavy work should be deferred.
 
