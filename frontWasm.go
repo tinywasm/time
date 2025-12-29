@@ -54,6 +54,15 @@ func (tc *timeClient) FormatTime(value any) string {
 		minutes := v % 60
 		return Fmt("%02d:%02d", hours, minutes)
 	case string:
+		// Try to parse as numeric timestamp first (e.g., from unixid.GetNewID())
+		if nano, err := Convert(v).Int64(); err == nil {
+			jsDate := tc.dateCtor.New(float64(nano) / 1e6)
+			hours := jsDate.Call("getUTCHours").Int()
+			minutes := jsDate.Call("getUTCMinutes").Int()
+			seconds := jsDate.Call("getUTCSeconds").Int()
+			return Fmt("%02d:%02d:%02d", hours, minutes, seconds)
+		}
+		// Otherwise check if already formatted
 		if Count(v, ":") >= 1 {
 			return v
 		}

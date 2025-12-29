@@ -41,6 +41,11 @@ func (ts *timeServer) FormatTime(value any) string {
 		minutes := v % 60
 		return Fmt("%02d:%02d", hours, minutes)
 	case string:
+		// Try to parse as numeric timestamp first (e.g., from unixid.GetNewID())
+		if nano, err := Convert(v).Int64(); err == nil {
+			return time.Unix(0, nano).UTC().Format("15:04:05")
+		}
+		// Otherwise check if already formatted
 		if Count(v, ":") >= 1 {
 			return v
 		}
