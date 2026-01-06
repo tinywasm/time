@@ -219,7 +219,7 @@ func UnixNanoShared(t *testing.T, tp time.TimeProvider) {
 		t.Errorf("UnixNano() returned timestamp too far from current time: %d (diff: %d ns)", nano, diff)
 	}
 
-	t.Logf("UnixNano: %d", nano)
+	//t.Logf("UnixNano: %d", nano)
 }
 
 // Test ParseDate
