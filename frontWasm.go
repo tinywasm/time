@@ -8,32 +8,34 @@ import (
 	. "github.com/tinywasm/fmt"
 )
 
-// timeClient implements TimeProvider for WASM/JS environments using the JavaScript Date API.
-type timeClient struct {
-	dateCtor js.Value
-}
-
-// NewTimeProvider returns the correct implementation for WASM.
-func NewTimeProvider() TimeProvider {
-	return &timeClient{
+func init() {
+	provider = &timeClient{
 		dateCtor: js.Global().Get("Date"),
 	}
+}
+
+// timeClient implements timeProvider for WASM/JS environments using the JavaScript Date API.
+type timeClient struct {
+	dateCtor js.Value
 }
 
 func (tc *timeClient) UnixNano() int64 {
 	jsDate := tc.dateCtor.New()
 	msTimestamp := jsDate.Call("getTime").Float()
-	// Convert milliseconds to nanoseconds
 	return int64(msTimestamp) * 1000000
+}
+
+func (tc *timeClient) applyOffset(nano int64) js.Value {
+	offsetMs := float64(getOffsetMinutes()) * 60000
+	return tc.dateCtor.New(float64(nano)/1e6 + offsetMs)
 }
 
 func (tc *timeClient) FormatDate(value any) string {
 	switch v := value.(type) {
 	case int64:
-		jsDate := tc.dateCtor.New(float64(v) / 1e6)
+		jsDate := tc.applyOffset(v)
 		return jsDate.Call("toISOString").String()[0:10]
 	case string:
-		// Validate date format: YYYY-MM-DD (10 chars with dashes at positions 4 and 7)
 		if len(v) == 10 && v[4] == '-' && v[7] == '-' {
 			return v
 		}
@@ -44,7 +46,7 @@ func (tc *timeClient) FormatDate(value any) string {
 func (tc *timeClient) FormatTime(value any) string {
 	switch v := value.(type) {
 	case int64: // UnixNano
-		jsDate := tc.dateCtor.New(float64(v) / 1e6)
+		jsDate := tc.applyOffset(v)
 		hours := jsDate.Call("getUTCHours").Int()
 		minutes := jsDate.Call("getUTCMinutes").Int()
 		seconds := jsDate.Call("getUTCSeconds").Int()
@@ -54,15 +56,13 @@ func (tc *timeClient) FormatTime(value any) string {
 		minutes := v % 60
 		return Fmt("%02d:%02d", hours, minutes)
 	case string:
-		// Try to parse as numeric timestamp first (e.g., from unixid.GetNewID())
 		if nano, err := Convert(v).Int64(); err == nil {
-			jsDate := tc.dateCtor.New(float64(nano) / 1e6)
+			jsDate := tc.applyOffset(nano)
 			hours := jsDate.Call("getUTCHours").Int()
 			minutes := jsDate.Call("getUTCMinutes").Int()
 			seconds := jsDate.Call("getUTCSeconds").Int()
 			return Fmt("%02d:%02d:%02d", hours, minutes, seconds)
 		}
-		// Otherwise check if already formatted
 		if Count(v, ":") >= 1 {
 			return v
 		}
@@ -73,11 +73,10 @@ func (tc *timeClient) FormatTime(value any) string {
 func (tc *timeClient) FormatDateTime(value any) string {
 	switch v := value.(type) {
 	case int64:
-		jsDate := tc.dateCtor.New(float64(v) / 1e6)
+		jsDate := tc.applyOffset(v)
 		iso := jsDate.Call("toISOString").String()
 		return iso[0:10] + " " + iso[11:19]
 	case string:
-		// Validate datetime format: YYYY-MM-DD HH:MM:SS (19 chars)
 		if len(v) == 19 && v[4] == '-' && v[7] == '-' && v[10] == ' ' && v[13] == ':' && v[16] == ':' {
 			return v
 		}
@@ -88,11 +87,10 @@ func (tc *timeClient) FormatDateTime(value any) string {
 func (tc *timeClient) FormatDateTimeShort(value any) string {
 	switch v := value.(type) {
 	case int64:
-		jsDate := tc.dateCtor.New(float64(v) / 1e6)
+		jsDate := tc.applyOffset(v)
 		iso := jsDate.Call("toISOString").String()
 		return iso[0:10] + " " + iso[11:16]
 	case string:
-		// Validate short datetime format: YYYY-MM-DD HH:MM (16 chars)
 		if len(v) == 16 && v[4] == '-' && v[7] == '-' && v[10] == ' ' && v[13] == ':' {
 			return v
 		}
@@ -101,17 +99,13 @@ func (tc *timeClient) FormatDateTimeShort(value any) string {
 }
 
 func (tc *timeClient) ParseDate(dateStr string) (int64, error) {
-	// Validate format: YYYY-MM-DD (10 chars with dashes at positions 4 and 7)
 	if len(dateStr) != 10 || dateStr[4] != '-' || dateStr[7] != '-' {
 		return 0, Errf("invalid date format: %s (expected YYYY-MM-DD)", dateStr)
 	}
-
 	jsDate := tc.dateCtor.New(dateStr + "T00:00:00Z")
 	if jsDate.Call("toString").String() == "Invalid Date" {
 		return 0, Errf("invalid date format: %s", dateStr)
 	}
-
-	// Verify date components match (JS Date auto-corrects invalid dates like Feb 30)
 	year := jsDate.Call("getUTCFullYear").Int()
 	month := jsDate.Call("getUTCMonth").Int() + 1
 	day := jsDate.Call("getUTCDate").Int()
@@ -119,7 +113,6 @@ func (tc *timeClient) ParseDate(dateStr string) (int64, error) {
 	if expected != dateStr {
 		return 0, Errf("invalid date: %s (auto-corrected to %s)", dateStr, expected)
 	}
-
 	ms := jsDate.Call("getTime").Float()
 	return int64(ms) * 1000000, nil
 }
@@ -142,9 +135,9 @@ func (tc *timeClient) ParseDateTime(dateStr, timeStr string) (int64, error) {
 }
 
 func (tc *timeClient) IsToday(nano int64) bool {
-	jsDate := tc.dateCtor.New(float64(nano) / 1e6)
-	now := tc.dateCtor.New()
-	return jsDate.Call("toDateString").String() == now.Call("toDateString").String()
+	jsDateLocal := tc.applyOffset(nano)
+	nowLocal := tc.applyOffset(tc.UnixNano())
+	return jsDateLocal.Call("toDateString").String() == nowLocal.Call("toDateString").String()
 }
 
 func (tc *timeClient) IsPast(nano int64) bool {
@@ -155,16 +148,11 @@ func (tc *timeClient) IsFuture(nano int64) bool {
 	return nano > tc.UnixNano()
 }
 
-func (tc *timeClient) DaysBetween(nano1, nano2 int64) int {
-	return daysBetween(nano1, nano2)
-}
-
-// WasmTimer implements Timer for WASM using setTimeout
 type WasmTimer struct {
 	id     int
 	active bool
-	jsFunc js.Func // Store to release later
-	f      func()  // Store callback to execute
+	jsFunc js.Func
+	f      func()
 }
 
 func (wt *WasmTimer) Stop() bool {
@@ -173,7 +161,7 @@ func (wt *WasmTimer) Stop() bool {
 	}
 	js.Global().Call("clearTimeout", wt.id)
 	wt.active = false
-	wt.jsFunc.Release() // Free memory
+	wt.jsFunc.Release()
 	return true
 }
 
@@ -182,7 +170,7 @@ func (wt *WasmTimer) Fire() {
 		return
 	}
 	wt.active = false
-	wt.jsFunc.Release() // Free memory after execution
+	wt.jsFunc.Release()
 	if wt.f != nil {
 		wt.f()
 	}
@@ -193,12 +181,10 @@ func (tc *timeClient) AfterFunc(milliseconds int, f func()) Timer {
 		active: true,
 		f:      f,
 	}
-
 	wt.jsFunc = js.FuncOf(func(this js.Value, args []js.Value) any {
 		wt.Fire()
 		return nil
 	})
-
 	wt.id = js.Global().Call("setTimeout", wt.jsFunc, milliseconds).Int()
 	return wt
 }

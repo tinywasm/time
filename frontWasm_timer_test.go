@@ -18,9 +18,7 @@ import (
 // The actual callback execution is tested only in backend tests.
 
 func TestAfterFunc_ReturnsTimer(t *testing.T) {
-	tp := time.NewTimeProvider()
-
-	timer := tp.AfterFunc(1000, func() {
+	timer := time.AfterFunc(1000, func() {
 		// Won't execute during test - we can't wait
 	})
 
@@ -34,9 +32,7 @@ func TestAfterFunc_ReturnsTimer(t *testing.T) {
 }
 
 func TestAfterFunc_StopReturnsTrue(t *testing.T) {
-	tp := time.NewTimeProvider()
-
-	timer := tp.AfterFunc(1000, func() {})
+	timer := time.AfterFunc(1000, func() {})
 
 	wasActive := timer.Stop()
 	if !wasActive {
@@ -46,9 +42,7 @@ func TestAfterFunc_StopReturnsTrue(t *testing.T) {
 }
 
 func TestAfterFunc_DoubleStopReturnsFalse(t *testing.T) {
-	tp := time.NewTimeProvider()
-
-	timer := tp.AfterFunc(1000, func() {})
+	timer := time.AfterFunc(1000, func() {})
 
 	timer.Stop()              // First stop
 	wasActive := timer.Stop() // Second stop
@@ -60,10 +54,9 @@ func TestAfterFunc_DoubleStopReturnsFalse(t *testing.T) {
 }
 
 func TestAfterFunc_CallbackLogic(t *testing.T) {
-	tp := time.NewTimeProvider()
 	executed := false
 
-	timer := tp.AfterFunc(1000, func() {
+	timer := time.AfterFunc(1000, func() {
 		executed = true
 	})
 
@@ -89,10 +82,8 @@ func TestAfterFunc_CallbackLogic(t *testing.T) {
 }
 
 func TestAfterFunc_NilCallback(t *testing.T) {
-	tp := time.NewTimeProvider()
-
 	// AfterFunc with nil callback should not panic
-	timer := tp.AfterFunc(1000, nil)
+	timer := time.AfterFunc(1000, nil)
 
 	if timer == nil {
 		t.Error("AfterFunc should return non-nil Timer even with nil callback")

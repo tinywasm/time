@@ -6,19 +6,23 @@ import (
 	"github.com/tinywasm/time"
 )
 
-// RunProviderTests runs all TimeProvider tests with the given provider.
-// This is called from environment-specific test files with the appropriate provider.
-func RunProviderTests(t *testing.T, tp time.TimeProvider) {
-	t.Run("UnixNano", func(t *testing.T) { UnixNanoShared(t, tp) })
-	t.Run("FormatDate", func(t *testing.T) { FormatDateShared(t, tp) })
-	t.Run("FormatTime", func(t *testing.T) { FormatTimeShared(t, tp) })
-	t.Run("FormatDateTime", func(t *testing.T) { FormatDateTimeShared(t, tp) })
-	t.Run("FormatDateTimeShort", func(t *testing.T) { FormatDateTimeShortShared(t, tp) })
-	t.Run("ParseDate", func(t *testing.T) { ParseDateShared(t, tp) })
-	t.Run("ParseTime", func(t *testing.T) { ParseTimeShared(t, tp) })
-	t.Run("ParseDateTime", func(t *testing.T) { ParseDateTimeShared(t, tp) })
-	t.Run("IsToday", func(t *testing.T) { IsTodayShared(t, tp) })
-	t.Run("IsPast", func(t *testing.T) { IsPastShared(t, tp) })
-	t.Run("IsFuture", func(t *testing.T) { IsFutureShared(t, tp) })
-	t.Run("DaysBetween", func(t *testing.T) { DaysBetweenShared(t, tp) })
+// RunAPITests runs all direct API tests.
+func RunAPITests(t *testing.T) {
+	// Set offset to 0 for consistent test results in shared tests (expecting UTC)
+	initialOffset := time.GetTimeZoneOffset()
+	time.SetTimeZoneOffset(0)
+	defer time.SetTimeZoneOffset(initialOffset)
+
+	t.Run("UnixNano", func(t *testing.T) { UnixNanoShared(t) })
+	t.Run("FormatDate", func(t *testing.T) { FormatDateShared(t) })
+	t.Run("FormatTime", func(t *testing.T) { FormatTimeShared(t) })
+	t.Run("FormatDateTime", func(t *testing.T) { FormatDateTimeShared(t) })
+	t.Run("FormatDateTimeShort", func(t *testing.T) { FormatDateTimeShortShared(t) })
+	t.Run("ParseDate", func(t *testing.T) { ParseDateShared(t) })
+	t.Run("ParseTime", func(t *testing.T) { ParseTimeShared(t) })
+	t.Run("ParseDateTime", func(t *testing.T) { ParseDateTimeShared(t) })
+	t.Run("IsToday", func(t *testing.T) { IsTodayShared(t) })
+	t.Run("IsPast", func(t *testing.T) { IsPastShared(t) })
+	t.Run("IsFuture", func(t *testing.T) { IsFutureShared(t) })
+	t.Run("DaysBetween", func(t *testing.T) { DaysBetweenSharedTest(t) })
 }

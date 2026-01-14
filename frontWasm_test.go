@@ -4,12 +4,9 @@ package time_test
 
 import (
 	"testing"
-
-	"github.com/tinywasm/time"
 )
 
-// TestTimeProviderWasm tests the WASM/JS time provider implementation.
-func TestTimeProviderWasm(t *testing.T) {
-	tp := time.NewTimeProvider()
-	RunProviderTests(t, tp)
+// TestTimeAPIWasm tests the WASM/JS time API implementation.
+func TestTimeAPIWasm(t *testing.T) {
+	RunAPITests(t)
 }

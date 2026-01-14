@@ -7,11 +7,10 @@ import (
 )
 
 // AfterFuncStopShared tests that Stop() prevents callback execution.
-// The waiting mechanism is platform-specific, so this only sets up the test.
 // Returns: timer, pointer to executed flag
-func AfterFuncStopSetup(tp time.TimeProvider) (time.Timer, *bool) {
+func AfterFuncStopSetup() (time.Timer, *bool) {
 	executed := false
-	timer := tp.AfterFunc(100, func() {
+	timer := time.AfterFunc(100, func() {
 		executed = true
 	})
 	return timer, &executed

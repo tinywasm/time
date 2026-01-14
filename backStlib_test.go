@@ -4,12 +4,9 @@ package time_test
 
 import (
 	"testing"
-
-	"github.com/tinywasm/time"
 )
 
-// TestTimeProviderStdlib tests the standard Go time provider implementation.
-func TestTimeProviderStdlib(t *testing.T) {
-	tp := time.NewTimeProvider()
-	RunProviderTests(t, tp)
+// TestTimeAPIBackend tests the standard Go time API implementation.
+func TestTimeAPIBackend(t *testing.T) {
+	RunAPITests(t)
 }

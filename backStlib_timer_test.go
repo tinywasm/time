@@ -11,10 +11,9 @@ import (
 )
 
 func TestAfterFunc(t *testing.T) {
-	tp := time.NewTimeProvider()
 	var executed atomic.Bool
 
-	tp.AfterFunc(50, func() {
+	time.AfterFunc(50, func() {
 		executed.Store(true)
 	})
 
@@ -31,8 +30,7 @@ func TestAfterFunc(t *testing.T) {
 }
 
 func TestAfterFunc_Stop(t *testing.T) {
-	tp := time.NewTimeProvider()
-	timer, executed := AfterFuncStopSetup(tp)
+	timer, executed := AfterFuncStopSetup()
 
 	wasActive := timer.Stop()
 	if !wasActive {
