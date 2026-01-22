@@ -50,18 +50,18 @@ func (tc *timeClient) FormatTime(value any) string {
 		hours := jsDate.Call("getUTCHours").Int()
 		minutes := jsDate.Call("getUTCMinutes").Int()
 		seconds := jsDate.Call("getUTCSeconds").Int()
-		return Fmt("%02d:%02d:%02d", hours, minutes, seconds)
+		return Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 	case int16: // Minutes since midnight
 		hours := v / 60
 		minutes := v % 60
-		return Fmt("%02d:%02d", hours, minutes)
+		return Sprintf("%02d:%02d", hours, minutes)
 	case string:
 		if nano, err := Convert(v).Int64(); err == nil {
 			jsDate := tc.applyOffset(nano)
 			hours := jsDate.Call("getUTCHours").Int()
 			minutes := jsDate.Call("getUTCMinutes").Int()
 			seconds := jsDate.Call("getUTCSeconds").Int()
-			return Fmt("%02d:%02d:%02d", hours, minutes, seconds)
+			return Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 		}
 		if Count(v, ":") >= 1 {
 			return v
@@ -109,7 +109,7 @@ func (tc *timeClient) ParseDate(dateStr string) (int64, error) {
 	year := jsDate.Call("getUTCFullYear").Int()
 	month := jsDate.Call("getUTCMonth").Int() + 1
 	day := jsDate.Call("getUTCDate").Int()
-	expected := Fmt("%04d-%02d-%02d", year, month, day)
+	expected := Sprintf("%04d-%02d-%02d", year, month, day)
 	if expected != dateStr {
 		return 0, Errf("invalid date: %s (auto-corrected to %s)", dateStr, expected)
 	}

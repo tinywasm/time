@@ -3,6 +3,7 @@
 package time
 
 import (
+	"fmt"
 	"time"
 
 	. "github.com/tinywasm/fmt"
@@ -45,7 +46,7 @@ func (ts *timeServer) FormatTime(value any) string {
 	case int16: // Minutes since midnight
 		hours := v / 60
 		minutes := v % 60
-		return Fmt("%02d:%02d", hours, minutes)
+		return fmt.Sprintf("%02d:%02d", hours, minutes)
 	case string:
 		if nano, err := Convert(v).Int64(); err == nil {
 			t := time.Unix(0, nano).UTC()
