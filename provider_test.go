@@ -18,6 +18,7 @@ func RunAPITests(t *testing.T) {
 	t.Run("FormatTime", func(t *testing.T) { FormatTimeShared(t) })
 	t.Run("FormatDateTime", func(t *testing.T) { FormatDateTimeShared(t) })
 	t.Run("FormatDateTimeShort", func(t *testing.T) { FormatDateTimeShortShared(t) })
+	t.Run("FormatISO8601", func(t *testing.T) { FormatISO8601Shared(t) })
 	t.Run("ParseDate", func(t *testing.T) { ParseDateShared(t) })
 	t.Run("ParseTime", func(t *testing.T) { ParseTimeShared(t) })
 	t.Run("ParseDateTime", func(t *testing.T) { ParseDateTimeShared(t) })

@@ -31,6 +31,12 @@ func FormatDateTimeShort(value any) string {
 	return provider.FormatDateTimeShort(value)
 }
 
+// FormatISO8601 formats a UnixNano timestamp into an ISO 8601 string (UTC).
+// Format: "YYYY-MM-DDTHH:MM:SSZ"
+func FormatISO8601(nano int64) string {
+	return provider.FormatISO8601(nano)
+}
+
 // ParseDate parses a date string ("YYYY-MM-DD") into a UnixNano timestamp (UTC).
 func ParseDate(dateStr string) (int64, error) {
 	return provider.ParseDate(dateStr)
@@ -78,6 +84,7 @@ type timeProvider interface {
 	FormatTime(value any) string
 	FormatDateTime(value any) string
 	FormatDateTimeShort(value any) string
+	FormatISO8601(nano int64) string
 	ParseDate(dateStr string) (int64, error)
 	ParseTime(timeStr string) (int16, error)
 	ParseDateTime(dateStr, timeStr string) (int64, error)

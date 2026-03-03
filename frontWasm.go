@@ -98,6 +98,17 @@ func (tc *timeClient) FormatDateTimeShort(value any) string {
 	return ""
 }
 
+func (tc *timeClient) FormatISO8601(nano int64) string {
+	// We MUST NOT use applyOffset here. We need raw UTC.
+	jsDate := tc.dateCtor.New(float64(nano) / 1e6)
+
+	// 'toISOString' natively outputs 'YYYY-MM-DDTHH:mm:ss.sssZ'
+	iso := jsDate.Call("toISOString").String()
+
+	// We slice out the milliseconds to strictly match 'YYYY-MM-DDTHH:MM:SSZ'
+	return iso[0:19] + "Z"
+}
+
 func (tc *timeClient) ParseDate(dateStr string) (int64, error) {
 	if len(dateStr) != 10 || dateStr[4] != '-' || dateStr[7] != '-' {
 		return 0, Errf("invalid date format: %s (expected YYYY-MM-DD)", dateStr)
@@ -149,7 +160,7 @@ func (tc *timeClient) IsFuture(nano int64) bool {
 }
 
 type WasmTimer struct {
-	id     int
+	id     js.Value
 	active bool
 	jsFunc js.Func
 	f      func()
@@ -185,6 +196,6 @@ func (tc *timeClient) AfterFunc(milliseconds int, f func()) Timer {
 		wt.Fire()
 		return nil
 	})
-	wt.id = js.Global().Call("setTimeout", wt.jsFunc, milliseconds).Int()
+	wt.id = js.Global().Call("setTimeout", wt.jsFunc, milliseconds)
 	return wt
 }
