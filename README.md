@@ -56,7 +56,7 @@ Returns the current active timezone offset in minutes.
 ## API Reference
 
 ### Display Formatting
-All formatting functions apply the current timezone offset to display local time.
+**⚠️ IMPORTANT:** All formatting functions below (`FormatDate`, `FormatTime`, `FormatDateTime`, etc.) automatically apply the current timezone offset to display **local time**. If you need raw UTC time, use `FormatISO8601` instead.
 
 #### `FormatDate(value any) string`
 Formats a value into a date string: "YYYY-MM-DD".
@@ -74,6 +74,10 @@ Formats a value into a date-time string: "YYYY-MM-DD HH:MM:SS".
 
 #### `FormatDateTimeShort(value any) string`
 Formats a value into a short date-time string: "YYYY-MM-DD HH:MM".
+
+#### `FormatISO8601(nano int64) string`
+Formats a UnixNano timestamp into an ISO 8601 string: "YYYY-MM-DDTHH:MM:SSZ".
+Unlike other formatting functions, this strictly outputs **UTC time** and ignores any local timezone offsets. Often used for DB records, HL7/FHIR, and REST APIs.
 
 ---
 

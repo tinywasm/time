@@ -151,6 +151,20 @@ func FormatDateTimeShared(t *testing.T) {
 	t.Logf("FormatDateTime tests passed")
 }
 
+// Test FormatISO8601
+func FormatISO8601Shared(t *testing.T) {
+	// Unix timestamp for 2024-01-15 15:30:45 UTC
+	nano := int64(1705332645000000000)
+	expected := "2024-01-15T15:30:45Z"
+
+	result := time.FormatISO8601(nano)
+	if result != expected {
+		t.Errorf("FormatISO8601 failed: expected %s, got %s", expected, result)
+	}
+
+	t.Logf("FormatISO8601 tests passed")
+}
+
 // Test FormatDateTimeShort
 func FormatDateTimeShortShared(t *testing.T) {
 	// Test with int64 (UnixNano timestamp)
