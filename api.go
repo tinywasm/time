@@ -37,6 +37,12 @@ func FormatISO8601(nano int64) string {
 	return provider.FormatISO8601(nano)
 }
 
+// FormatCompact formats a UnixNano timestamp into a compact string "YYYYMMDDHHmmss" (UTC).
+// Useful for PDF metadata dates, file naming, and compact timestamps.
+func FormatCompact(nano int64) string {
+	return provider.FormatCompact(nano)
+}
+
 // ParseDate parses a date string ("YYYY-MM-DD") into a UnixNano timestamp (UTC).
 func ParseDate(dateStr string) (int64, error) {
 	return provider.ParseDate(dateStr)
@@ -85,6 +91,7 @@ type timeProvider interface {
 	FormatDateTime(value any) string
 	FormatDateTimeShort(value any) string
 	FormatISO8601(nano int64) string
+	FormatCompact(nano int64) string
 	ParseDate(dateStr string) (int64, error)
 	ParseTime(timeStr string) (int16, error)
 	ParseDateTime(dateStr, timeStr string) (int64, error)
