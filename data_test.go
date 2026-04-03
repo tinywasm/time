@@ -165,6 +165,38 @@ func FormatISO8601Shared(t *testing.T) {
 	t.Logf("FormatISO8601 tests passed")
 }
 
+// Test FormatCompact
+func FormatCompactShared(t *testing.T) {
+	// Known timestamp: 2024-01-15 15:30:45 UTC
+	nano := int64(1705332645000000000)
+	expected := "20240115153045"
+
+	result := time.FormatCompact(nano)
+	if result != expected {
+		t.Errorf("FormatCompact(%d) = %s; want %s", nano, result, expected)
+	}
+
+	// Test with zero value (epoch)
+	result = time.FormatCompact(int64(0))
+	if result != "19700101000000" {
+		t.Errorf("FormatCompact(0) = %s; want 19700101000000", result)
+	}
+
+	// Test length is always 14 characters
+	if len(result) != 14 {
+		t.Errorf("FormatCompact length = %d; want 14", len(result))
+	}
+
+	// Test with current time
+	currentNano := time.Now()
+	result = time.FormatCompact(currentNano)
+	if len(result) != 14 {
+		t.Errorf("FormatCompact(current) length = %d; want 14", len(result))
+	}
+
+	t.Logf("FormatCompact tests passed")
+}
+
 // Test FormatDateTimeShort
 func FormatDateTimeShortShared(t *testing.T) {
 	// Test with int64 (UnixNano timestamp)

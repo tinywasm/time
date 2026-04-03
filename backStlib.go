@@ -90,6 +90,11 @@ func (ts *timeServer) FormatISO8601(nano int64) string {
 	return t.Format(time.RFC3339)
 }
 
+func (ts *timeServer) FormatCompact(nano int64) string {
+	t := time.Unix(0, nano).UTC()
+	return t.Format("20060102150405")
+}
+
 func (ts *timeServer) ParseDate(dateStr string) (int64, error) {
 	t, err := time.ParseInLocation("2006-01-02", dateStr, time.UTC)
 	if err != nil {

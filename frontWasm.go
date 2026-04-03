@@ -109,6 +109,14 @@ func (tc *timeClient) FormatISO8601(nano int64) string {
 	return iso[0:19] + "Z"
 }
 
+func (tc *timeClient) FormatCompact(nano int64) string {
+	jsDate := tc.dateCtor.New(float64(nano) / 1e6)
+	iso := jsDate.Call("toISOString").String()
+	// iso = "YYYY-MM-DDTHH:mm:ss.sssZ"
+	// extraer: YYYY(0:4) MM(5:7) DD(8:10) HH(11:13) mm(14:16) ss(17:19)
+	return iso[0:4] + iso[5:7] + iso[8:10] + iso[11:13] + iso[14:16] + iso[17:19]
+}
+
 func (tc *timeClient) ParseDate(dateStr string) (int64, error) {
 	if len(dateStr) != 10 || dateStr[4] != '-' || dateStr[7] != '-' {
 		return 0, Errf("invalid date format: %s (expected YYYY-MM-DD)", dateStr)

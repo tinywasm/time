@@ -34,6 +34,10 @@ func main() {
     // Perform date calculations
     isToday := time.IsToday(nano)
     println("Is Today (Local)?", isToday)
+
+    // Compact format (UTC, no separators)
+    compact := time.FormatCompact(nano)
+    println("Compact:", compact) // "20260402153045"
 }
 ```
 
@@ -76,6 +80,10 @@ Formats a value into a short date-time string: "YYYY-MM-DD HH:MM".
 #### `FormatISO8601(nano int64) string`
 Formats a UnixNano timestamp into an ISO 8601 string: "YYYY-MM-DDTHH:MM:SSZ".
 Unlike other formatting functions, this strictly outputs **UTC time** and ignores any local timezone offsets. Often used for DB records, HL7/FHIR, and REST APIs.
+
+#### `FormatCompact(nano int64) string`
+Formats a UnixNano timestamp into a compact string: "YYYYMMDDHHmmss".
+Outputs **UTC time**, ignoring timezone offsets. Useful for PDF metadata dates, file naming, and compact timestamps.
 
 ---
 
