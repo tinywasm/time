@@ -492,3 +492,116 @@ func DaysBetweenSharedTest(t *testing.T) {
 
 	t.Logf("DaysBetween tests passed")
 }
+
+// Test Weekday
+func WeekdayShared(t *testing.T) {
+	// 2021-01-01 00:00:00 UTC was a Friday (5)
+	result := time.Weekday(1609459200)
+	if result != 5 {
+		t.Errorf("Weekday(2021-01-01) = %d; want 5 (Friday)", result)
+	}
+
+	// 1970-01-01 was a Thursday (4)
+	result = time.Weekday(0)
+	if result != 4 {
+		t.Errorf("Weekday(1970-01-01) = %d; want 4 (Thursday)", result)
+	}
+
+	// 2024-01-07 was a Sunday (0)
+	result = time.Weekday(1704585600)
+	if result != 0 {
+		t.Errorf("Weekday(2024-01-07) = %d; want 0 (Sunday)", result)
+	}
+
+	// Pre-1970: 1969-12-31 was a Wednesday (3)
+	result = time.Weekday(-86400)
+	if result != 3 {
+		t.Errorf("Weekday(1969-12-31) = %d; want 3 (Wednesday)", result)
+	}
+
+	// Pre-1970: 1969-12-27 was a Saturday (6)
+	result = time.Weekday(-86400 * 5)
+	if result != 6 {
+		t.Errorf("Weekday(1969-12-27) = %d; want 6 (Saturday)", result)
+	}
+
+	t.Logf("Weekday tests passed")
+}
+
+// Test MidnightUTC
+func MidnightUTCShared(t *testing.T) {
+	// Midpoint of 2021-01-01: should return start of that day
+	midnight := time.MidnightUTC(1609459200 + 3600) // 01:00:00 UTC
+	if midnight != 1609459200 {
+		t.Errorf("MidnightUTC = %d; want 1609459200", midnight)
+	}
+
+	// Already midnight — idempotent
+	midnight = time.MidnightUTC(1609459200)
+	if midnight != 1609459200 {
+		t.Errorf("MidnightUTC(already midnight) = %d; want 1609459200", midnight)
+	}
+
+	// Last second of a day: 2021-01-01 23:59:59
+	midnight = time.MidnightUTC(1609545599)
+	if midnight != 1609459200 {
+		t.Errorf("MidnightUTC(23:59:59) = %d; want 1609459200", midnight)
+	}
+
+	// Pre-1970: 1969-12-31 23:59:59
+	midnight = time.MidnightUTC(-1)
+	if midnight != -86400 {
+		t.Errorf("MidnightUTC(-1) = %d; want -86400 (1969-12-31 00:00:00)", midnight)
+	}
+
+	// Pre-1970: 1969-12-31 00:00:00
+	midnight = time.MidnightUTC(-86400)
+	if midnight != -86400 {
+		t.Errorf("MidnightUTC(-86400) = %d; want -86400", midnight)
+	}
+
+	t.Logf("MidnightUTC tests passed")
+}
+
+// Test LocalMinutesToUnixUTC
+func LocalMinutesToUnixUTCShared(t *testing.T) {
+	// UTC offset 0: 09:00 local == 09:00 UTC
+	// date: 2021-01-01 00:00:00 UTC (1609459200)
+	result := time.LocalMinutesToUnixUTC(1609459200, 9*60, "UTC")
+	expected := int64(1609459200 + 9*3600)
+	if result != expected {
+		t.Errorf("LocalMinutesToUnixUTC(UTC, 09:00) = %d; want %d", result, expected)
+	}
+
+	// UTC-5 (America/New_York winter): 09:00 local == 14:00 UTC
+	result = time.LocalMinutesToUnixUTC(1609459200, 9*60, "America/New_York")
+	expected = int64(1609459200 + 14*3600)
+
+	// In WASM, we only support the global offset.
+	// In the backend, we support full IANA resolution.
+	// Determine if we are in WASM by checking the provider if possible, or just log.
+	if result != expected {
+		// If we are in backend, this is a failure.
+		// If we are in WASM, it's expected unless we set the offset.
+		t.Logf("LocalMinutesToUnixUTC(America/New_York, 09:00) = %d; want %d (divergence expected in WASM if offset is not -300)", result, expected)
+
+		// If we set the offset to -300, it should match even in WASM.
+		// Note: SetTimeZoneOffset takes hours, not minutes.
+		initialOffset := time.GetTimeZoneOffset()
+		time.SetTimeZoneOffset(-5)
+		result = time.LocalMinutesToUnixUTC(1609459200, 9*60, "America/New_York")
+		if result != expected {
+			t.Errorf("LocalMinutesToUnixUTC with offset -5 = %d; want %d", result, expected)
+		}
+		time.SetTimeZoneOffset(initialOffset)
+	}
+
+	// Invalid timezone falls back to UTC
+	result = time.LocalMinutesToUnixUTC(1609459200, 9*60, "Invalid/Zone")
+	expectedFallback := int64(1609459200 + 9*3600)
+	if result != expectedFallback {
+		t.Errorf("LocalMinutesToUnixUTC(invalid tz) = %d; want %d (UTC fallback)", result, expectedFallback)
+	}
+
+	t.Logf("LocalMinutesToUnixUTC tests passed")
+}

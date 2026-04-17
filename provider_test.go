@@ -27,4 +27,7 @@ func RunAPITests(t *testing.T) {
 	t.Run("IsPast", func(t *testing.T) { IsPastShared(t) })
 	t.Run("IsFuture", func(t *testing.T) { IsFutureShared(t) })
 	t.Run("DaysBetween", func(t *testing.T) { DaysBetweenSharedTest(t) })
+	t.Run("Weekday", func(t *testing.T) { WeekdayShared(t) })
+	t.Run("MidnightUTC", func(t *testing.T) { MidnightUTCShared(t) })
+	t.Run("LocalMinutesToUnixUTC", func(t *testing.T) { LocalMinutesToUnixUTCShared(t) })
 }
