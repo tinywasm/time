@@ -78,6 +78,36 @@ func DaysBetween(nano1, nano2 int64) int {
 	return DaysBetweenShared(nano1, nano2)
 }
 
+// Weekday returns the day of the week (0=Sunday … 6=Saturday) for a Unix
+// timestamp in seconds (UTC). Based on the fact that 1970-01-01 was a Thursday (4).
+func Weekday(unixSec int64) int {
+	days := MidnightUTC(unixSec) / 86400
+	w := int((days + 4) % 7)
+	if w < 0 {
+		w += 7
+	}
+	return w
+}
+
+// MidnightUTC returns the Unix timestamp in seconds for midnight UTC of the
+// day that contains the given Unix timestamp in seconds.
+func MidnightUTC(unixSec int64) int64 {
+	days := unixSec / 86400
+	if unixSec < 0 && unixSec%86400 != 0 {
+		days--
+	}
+	return days * 86400
+}
+
+// LocalMinutesToUnixUTC converts minutes-from-midnight expressed in a local
+// timezone into a UTC Unix timestamp in seconds for the given date.
+// dateSec is a Unix timestamp in seconds (UTC) that identifies the target date.
+// localMinutes is minutes elapsed since midnight in the local timezone.
+// tz is an IANA timezone name (e.g. "America/New_York"); falls back to UTC if invalid.
+func LocalMinutesToUnixUTC(dateSec int64, localMinutes int, tz string) int64 {
+	return provider.LocalMinutesToUnixUTC(dateSec, localMinutes, tz)
+}
+
 // AfterFunc waits for the specified milliseconds then calls f.
 func AfterFunc(milliseconds int, f func()) Timer {
 	return provider.AfterFunc(milliseconds, f)
@@ -98,6 +128,7 @@ type timeProvider interface {
 	IsToday(nano int64) bool
 	IsPast(nano int64) bool
 	IsFuture(nano int64) bool
+	LocalMinutesToUnixUTC(dateSec int64, localMinutes int, tz string) int64
 	AfterFunc(milliseconds int, f func()) Timer
 }
 

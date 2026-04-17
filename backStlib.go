@@ -135,6 +135,18 @@ func (ts *timeServer) IsFuture(nano int64) bool {
 	return nano > ts.UnixNano()
 }
 
+func (ts *timeServer) LocalMinutesToUnixUTC(dateSec int64, localMinutes int, tz string) int64 {
+	loc, err := time.LoadLocation(tz)
+	if err != nil {
+		loc = time.UTC
+	}
+	utcDate := time.Unix(dateSec, 0).UTC()
+	hour := localMinutes / 60
+	minute := localMinutes % 60
+	localTime := time.Date(utcDate.Year(), utcDate.Month(), utcDate.Day(), hour, minute, 0, 0, loc)
+	return localTime.Unix()
+}
+
 type timerWrapper struct {
 	timer *time.Timer
 }

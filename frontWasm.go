@@ -167,6 +167,12 @@ func (tc *timeClient) IsFuture(nano int64) bool {
 	return nano > tc.UnixNano()
 }
 
+func (tc *timeClient) LocalMinutesToUnixUTC(dateSec int64, localMinutes int, tz string) int64 {
+	offsetSec := int64(getOffsetMinutes()) * 60
+	midnight := MidnightUTC(dateSec)
+	return midnight + int64(localMinutes)*60 - offsetSec
+}
+
 type WasmTimer struct {
 	id     js.Value
 	active bool
